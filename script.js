@@ -2,15 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarImagenesDesdeCSV();
 });
 
-// Función para cargar y mostrar imágenes desde datos CSV
 function cargarImagenesDesdeCSV() {
-    fetch('tabla_evaluacion.csv')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-        })
+    fetch('https://filedn.com/lRAMUKU4tN3HUnQqI5npg4H/Plantix/tabla_evaluacion.csv')
+        .then(response => response.text())
         .then(csvText => {
             const imagenes = parseCSV(csvText);
             const agrupadasPorImagen = agruparPorImagen(imagenes);
@@ -19,7 +13,6 @@ function cargarImagenesDesdeCSV() {
         .catch(err => console.error('Error al cargar y parsear el CSV:', err));
 }
 
-// Función para parsear texto CSV y convertirlo a objetos de JavaScript
 function parseCSV(csvText) {
     const lines = csvText.trim().split('\n');
     const headers = lines.shift().split(',');
@@ -33,7 +26,6 @@ function parseCSV(csvText) {
     });
 }
 
-// Agrupar por ID de imagen para manejar múltiples registros por imagen
 function agruparPorImagen(imagenes) {
     return imagenes.reduce((acc, imagen) => {
         const id = imagen.id;
@@ -45,7 +37,6 @@ function agruparPorImagen(imagenes) {
     }, {});
 }
 
-// Función para mostrar imágenes en la página
 function mostrarImagenes(imagenes) {
     const imgContainer = document.getElementById('img-container');
     imgContainer.innerHTML = '';
@@ -90,7 +81,6 @@ function mostrarImagenes(imagenes) {
     });
 }
 
-// Función para guardar comentarios sobre las imágenes
 function guardarComentario(imageId) {
     const imgBox = document.querySelector(`button[onclick="guardarComentario('${imageId}')"]`).parentNode;
     const comentario = imgBox.querySelector('textarea').value;
