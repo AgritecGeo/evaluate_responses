@@ -5,10 +5,15 @@ document.addEventListener('DOMContentLoaded', function() {
 // Función para cargar y mostrar imágenes desde datos CSV
 function cargarImagenesDesdeCSV() {
     fetch('https://filedn.com/lRAMUKU4tN3HUnQqI5npg4H/Plantix/tabla_evaluacion.csv')
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
         .then(csvText => {
             const imagenes = parseCSV(csvText);
-            window.imagenes = imagenes; // Hacer global para uso en filtrarImagenes
+            window.imagenes = imagenes; // Almacenar globalmente para uso en otras funciones
             mostrarImagenes(imagenes);
         })
         .catch(err => console.error('Error al cargar y parsear el CSV:', err));
@@ -28,16 +33,17 @@ function parseCSV(csvText) {
     });
 }
 
-// Función para mostrar imágenes en la página
+// Función para mostrar imágenes y evaluaciones en la página
 function mostrarImagenes(data) {
     const imgContainer = document.getElementById('img-container');
-    imgContainer.innerHTML = ''; // Limpia el contenedor antes de añadir nuevas imágenes
+    imgContainer.innerHTML = ''; // Limpiar el contenedor antes de añadir nuevas imágenes
 
     data.forEach(imagen => {
         const imgDiv = document.createElement('div');
         imgDiv.classList.add('img-box');
+        const imageURL = `https://filedn.com/lRAMUKU4tN3HUnQqI5npg4H/Plantix/Imagenes/${imagen['ID']}.png`;
         imgDiv.innerHTML = `
-            <img src="https://filedn.com/lRAMUKU4tN3HUnQqI5npg4H/Plantix/Imagenes/${imagen['ID']}.png" alt="${imagen['diagnostico']}" class="image">
+            <img src="${imageURL}" alt="${imagen['diagnostico']}" class="image">
             <div>ID: ${imagen['ID']}</div>
             <div>Diagnóstico: ${imagen['diagnostico']}</div>
             <div>Valor: ${imagen['valor']}</div>
@@ -61,6 +67,5 @@ function guardarComentario(imageId) {
     const fecha = new Date().toISOString();
 
     console.log(`Guardando comentario para la imagen ${imageId}: ${comentario}, Evaluación: ${evaluacion}, Fecha: ${fecha}`);
-    // Aquí añadirías la lógica para enviar estos datos a tu backend o API
+    // Aquí deberías añadir la lógica para enviar estos datos a tu backend o API
 }
-
