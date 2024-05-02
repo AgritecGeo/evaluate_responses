@@ -2,9 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarImagenesDesdeCSV();
 });
 
-// Función para cargar y mostrar imágenes desde datos CSV
+// Función para cargar y mostrar imágenes desde datos CSV ubicado en el mismo repositorio
 function cargarImagenesDesdeCSV() {
-    fetch('./tabla_evaluacion.csv') // Cambia la ruta según la ubicación relativa del archivo CSV en tu proyecto
+    fetch('./tabla_evaluacion.csv')  // Asume que el archivo CSV está en la raíz del proyecto o ajusta la ruta según sea necesario
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -41,7 +41,7 @@ function mostrarImagenes(data) {
     data.forEach(imagen => {
         const imgDiv = document.createElement('div');
         imgDiv.classList.add('img-box');
-        const imageURL = `./Imagenes/${imagen['ID']}.png`; // Asegúrate de que la carpeta 'Imagenes' está en la ubicación correcta relativa a donde se sirve este script
+        const imageURL = `https://filedn.com/lRAMUKU4tN3HUnQqI5npg4H/Plantix/Imagenes/imagen_${imagen['ID']}.png`;
         imgDiv.innerHTML = `
             <img src="${imageURL}" alt="${imagen['diagnostico']}" class="image" onerror="this.onerror=null;this.src='https://via.placeholder.com/150';">
             <div>ID: ${imagen['ID']}</div>
