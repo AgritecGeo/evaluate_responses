@@ -2,24 +2,16 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarImagenesDesdeCSV();
 });
 
-// Función para cargar y mostrar imágenes desde datos CSV ubicado en el mismo repositorio
 function cargarImagenesDesdeCSV() {
-    fetch('./tabla_evaluacion.csv')  // Asume que el archivo CSV está en la raíz del proyecto o ajusta la ruta según sea necesario
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-        })
+    fetch('tabla_evaluacion.csv')
+        .then(response => response.text())
         .then(csvText => {
             const imagenes = parseCSV(csvText);
-            window.imagenes = imagenes; // Almacenar globalmente para uso en otras funciones
             mostrarImagenes(imagenes);
         })
         .catch(err => console.error('Error al cargar y parsear el CSV:', err));
 }
 
-// Función para parsear texto CSV y convertirlo a objetos de JavaScript
 function parseCSV(csvText) {
     const lines = csvText.trim().split('\n');
     const headers = lines.shift().split(',');
@@ -33,17 +25,16 @@ function parseCSV(csvText) {
     });
 }
 
-// Función para mostrar imágenes y evaluaciones en la página
 function mostrarImagenes(data) {
     const imgContainer = document.getElementById('img-container');
-    imgContainer.innerHTML = ''; // Limpiar el contenedor antes de añadir nuevas imágenes
+    imgContainer.innerHTML = ''; // Limpia el contenedor antes de añadir nuevas imágenes
 
     data.forEach(imagen => {
         const imgDiv = document.createElement('div');
         imgDiv.classList.add('img-box');
         const imageURL = `https://filedn.com/lRAMUKU4tN3HUnQqI5npg4H/Plantix/Imagenes/imagen_${imagen['ID']}.png`;
         imgDiv.innerHTML = `
-            <img src="${imageURL}" alt="${imagen['diagnostico']}" class="image" onerror="this.onerror=null;this.src='https://via.placeholder.com/150';">
+            <img src="${imageURL}" alt="Imagen ${imagen['ID']}" class="image">
             <div>ID: ${imagen['ID']}</div>
             <div>Diagnóstico: ${imagen['diagnostico']}</div>
             <div>Valor: ${imagen['valor']}</div>
