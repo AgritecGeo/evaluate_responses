@@ -5,7 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
 // Función para cargar y mostrar imágenes desde datos CSV
 function cargarImagenesDesdeCSV() {
     fetch('tabla_evaluacion.csv')
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
         .then(csvText => {
             const imagenes = parseCSV(csvText);
             const agrupadasPorImagen = agruparPorImagen(imagenes);
@@ -51,10 +56,7 @@ function mostrarImagenes(imagenes) {
         imgDiv.classList.add('img-box');
         const imageURL = `https://filedn.com/lRAMUKU4tN3HUnQqI5npg4H/Plantix/Imagenes/imagen_${id}.png`;
         
-        imgDiv.innerHTML = `
-            <img src="${imageURL}" alt="Imagen ${id}" class="image">
-            <div><strong>ID:</strong> ${id}</div>
-        `;
+        imgDiv.innerHTML = `<img src="${imageURL}" alt="Imagen ${id}" class="image">`;
         
         const table = document.createElement('table');
         registros.forEach(registro => {
@@ -92,8 +94,9 @@ function mostrarImagenes(imagenes) {
 function guardarComentario(imageId) {
     const imgBox = document.querySelector(`button[onclick="guardarComentario('${imageId}')"]`).parentNode;
     const comentario = imgBox.querySelector('textarea').value;
+    const evaluacion = imgBox.querySelector('select').value;
     const fecha = new Date().toISOString();
 
-    console.log(`Guardando comentario para la imagen ${imageId}: ${comentario}, Fecha: ${fecha}`);
+    console.log(`Guardando comentario para la imagen ${imageId}: ${comentario}, Evaluación: ${evaluacion}, Fecha: ${fecha}`);
     // Aquí se debería añadir la lógica para enviar estos datos a tu backend o API
 }
