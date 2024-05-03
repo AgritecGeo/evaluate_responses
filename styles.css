@@ -44,6 +44,11 @@ h1 {
     margin-bottom: 10px;
 }
 
+/* Ajustes para mostrar elementos verticalmente alineados y con espacio adecuado */
+.img-box div, .img-box select, .img-box textarea, .img-box button {
+    margin-top: 10px; /* Espacio entre elementos */
+}
+
 @media (min-width: 600px) {
     .img-box {
         width: 48%; /* Ajuste para tablets y pequeños cambios de pantalla */
