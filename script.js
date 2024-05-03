@@ -2,15 +2,13 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarImagenesDesdeCSV();
 });
 
-// URL del archivo CSV en el repositorio de GitHub
-const csvURL = 'tabla_evaluacion.csv';
-
 // Función para cargar y mostrar imágenes desde datos CSV
 function cargarImagenesDesdeCSV() {
-    fetch(csvURL)
+    fetch('tabla_evaluacion.csv')
         .then(response => response.text())
         .then(csvText => {
             const imagenes = parseCSV(csvText);
+            window.imagenes = imagenes; // Almacenar globalmente para uso en otras funciones
             mostrarImagenes(imagenes);
         })
         .catch(err => console.error('Error al cargar y parsear el CSV:', err));
@@ -23,29 +21,29 @@ function parseCSV(csvText) {
 
     return lines.map(line => {
         const data = line.split(',');
-        return headers.reduce((obj, header, index) => {
-            obj[header] = data[index];
+        return headers.reduce((obj, nextKey, index) => {
+            obj[nextKey] = data[index];
             return obj;
         }, {});
     });
 }
 
 // Función para mostrar imágenes y evaluaciones en la página
-function mostrarImagenes(datos) {
+function mostrarImagenes(data) {
     const imgContainer = document.getElementById('img-container');
-    imgContainer.innerHTML = ''; // Limpia el contenedor antes de añadir nuevas imágenes
+    imgContainer.innerHTML = '';
 
-    datos.forEach(imagen => {
+    data.forEach(imagen => {
         const imgDiv = document.createElement('div');
         imgDiv.classList.add('img-box');
-        const imageURL = 'https://filedn.com/lRAMUKU4tN3HUnQqI5npg4H/Plantix/Imagenes/imagen_' + imagen.id + '.png';
+        const imageURL = `https://filedn.com/lRAMUKU4tN3HUnQqI5npg4H/Plantix/Imagenes/imagen_${imagen.id}.png`;
         imgDiv.innerHTML = `
-            <img src="${imageURL}" alt="${imagen.commonName}" class="image">
-            <div><strong>ID:</strong> ${imagen.id}</div>
-            <div><strong>Nombre común:</strong> ${imagen.commonName}</div>
-            <div><strong>Nombre científico:</strong> ${imagen.scientificName}</div>
-            <div><strong>Patógeno:</strong> ${imagen.pathogen}</div>
-            <div><strong>Probabilidad:</strong> ${imagen.probability}</div>
+            <img src="${imageURL}" alt="${imagen.commonName}">
+            <div>ID: ${imagen.id}</div>
+            <div>Common Name: ${imagen.commonName}</div>
+            <div>Scientific Name: ${imagen.scientificName}</div>
+            <div>Pathogen: ${imagen.pathogen}</div>
+            <div>Probability: ${imagen.probability}</div>
             <select>
                 <option value="true">Verdadero</option>
                 <option value="false">Falso</option>
@@ -66,5 +64,5 @@ function guardarComentario(imageId) {
     const fecha = new Date().toISOString();
 
     console.log(`Guardando comentario para la imagen ${imageId}: ${comentario}, Evaluación: ${evaluacion}, Fecha: ${fecha}`);
-    // Aquí añadirías la lógica para enviar estos datos a tu backend o API
+    // Aquí deberías añadir la lógica para enviar estos datos a tu backend o API
 }
