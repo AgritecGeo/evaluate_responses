@@ -38,19 +38,21 @@ function mostrarImagenes(data) {
         imgDiv.classList.add('img-box');
         const imageURL = `https://filedn.com/lRAMUKU4tN3HUnQqI5npg4H/Plantix/Imagenes/imagen_${imagen.id}.png`;
         imgDiv.innerHTML = `
-            <img src="${imageURL}" alt="${imagen.commonName}">
-            <div>ID: ${imagen.id}</div>
-            <div>Common Name: ${imagen.commonName}</div>
-            <div>Scientific Name: ${imagen.scientificName}</div>
-            <div>Pathogen: ${imagen.pathogen}</div>
-            <div>Probability: ${imagen.probability}</div>
-            <select>
-                <option value="true">Verdadero</option>
-                <option value="false">Falso</option>
-                <option value="unknown">No se puede determinar</option>
-            </select>
-            <textarea placeholder="Añade un comentario..."></textarea>
-            <button onclick="guardarComentario('${imagen.id}')">Guardar</button>
+            <img src="${imageURL}" alt="${imagen.commonName}" class="image">
+            <table>
+                <tr><td>ID:</td><td>${imagen.id}</td></tr>
+                <tr><td>Common Name:</td><td>${imagen.commonName}</td></tr>
+                <tr><td>Scientific Name:</td><td>${imagen.scientificName}</td></tr>
+                <tr><td>Pathogen:</td><td>${imagen.pathogen}</td></tr>
+                <tr><td>Probability:</td><td>${imagen.probability}</td></tr>
+                <tr><td colspan="2"><select>
+                    <option value="true">Verdadero</option>
+                    <option value="false">Falso</option>
+                    <option value="unknown">No se puede determinar</option>
+                </select></td></tr>
+                <tr><td colspan="2"><textarea placeholder="Añade un comentario..."></textarea></td></tr>
+                <tr><td colspan="2"><button onclick="guardarComentario('${imagen.id}')">Guardar</button></td></tr>
+            </table>
         `;
         imgContainer.appendChild(imgDiv);
     });
