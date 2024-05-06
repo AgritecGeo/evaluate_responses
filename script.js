@@ -1,6 +1,25 @@
 document.addEventListener('DOMContentLoaded', function() {
-    cargarImagenesDesdeCSV();
+    //cargarImagenesDesdeCSV();
+    cargarImagenesDesdeGCP();
 });
+
+
+function cargarImagenesDesdeGCP() {
+    fetch('https://us-central1-agritecgeo-analytics.cloudfunctions.net/evaluate-response-plantix-1')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            const imagenes = JSON.parse(data);
+            window.imagenes = imagenes;
+            mostrarImagenes(imagenes);
+        })
+        .catch(err => console.error('Error al cargar las imágenes desde GCP:', err));
+}
 
 // Función para cargar y mostrar imágenes desde datos CSV
 function cargarImagenesDesdeCSV() {
@@ -12,6 +31,35 @@ function cargarImagenesDesdeCSV() {
             mostrarImagenes(imagenes);
         })
         .catch(err => console.error('Error al cargar y parsear el CSV:', err));
+}
+
+function mostrarImagenes(imagenes) {
+    const imgContainer = document.getElementById('img-container');
+    imgContainer.innerHTML = '';
+
+    imagenes.forEach(imagen => {
+        const imgDiv = document.createElement('div');
+        imgDiv.classList.add('img-box');
+        const imageURL = imagen.url_imagen || 'https://via.placeholder.com/150'; // Proporcionar una imagen por defecto
+        imgDiv.innerHTML = `
+        <img src="${imageURL}" alt="${imagen.commonName}" class="image">
+        <table>
+            <tr><td>ID:</td><td id="id-${imagen.id}">${imagen.id}</td></tr>
+            <tr><td>Common Name:</td><td id="commonName-${imagen.id}">${imagen.commonName}</td></tr>
+            <tr><td>Scientific Name:</td><td id="scientificName-${imagen.id}">${imagen.scientificName}</td></tr>
+            <tr><td>Pathogen:</td><td id="pathogen-${imagen.id}">${imagen.pathogen}</td></tr>
+            <tr><td>Probability:</td><td id="probability-${imagen.id}">${imagen.probability}</td></tr>
+            <tr><td colspan="2"><select id="status-${imagen.id}">
+                <option value="true">Verdadero</option>
+                <option value="false">Falso</option>
+                <option value="unknown">No se puede determinar</option>
+            </select></td></tr>
+            <tr><td colspan="2"><textarea id="comment-${imagen.id}" placeholder="Añade un comentario..."></textarea></td></tr>
+            <tr><td colspan="2"><button onclick="enviarDatos('${imagen.id}')">Enviar Datos</button></td></tr>
+        </table>
+    `;
+        imgContainer.appendChild(imgDiv);
+    });
 }
 
 // Función para parsear texto CSV y convertirlo a objetos de JavaScript
@@ -28,6 +76,8 @@ function parseCSV(csvText) {
     });
 }
 
+
+/*
 // Función para mostrar imágenes y evaluaciones en la página
 function mostrarImagenes(data) {
     const imgContainer = document.getElementById('img-container');
@@ -55,6 +105,48 @@ function mostrarImagenes(data) {
             </table>
         `;
         imgContainer.appendChild(imgDiv);
+    });
+}
+*/
+
+
+function enviarDatos(imagenId) {
+    // Encuentra los elementos por ID (asegúrate de que los IDs sean únicos)
+    const commonNameEl = document.querySelector(`#commonName-${imagenId}`);
+    const scientificNameEl = document.querySelector(`#scientificName-${imagenId}`);
+    const pathogenEl = document.querySelector(`#pathogen-${imagenId}`);
+    const probabilityEl = document.querySelector(`#probability-${imagenId}`);
+    const statusEl = document.querySelector(`#status-${imagenId}`);
+    const commentEl = document.querySelector(`#comment-${imagenId}`);
+
+    // Crea un objeto con los datos
+    const data = {
+        id: imagenId,
+        commonName: commonNameEl ? commonNameEl.textContent : '',
+        scientificName: scientificNameEl ? scientificNameEl.textContent : '',
+        pathogen: pathogenEl ? pathogenEl.textContent : '',
+        probability: probabilityEl ? probabilityEl.textContent : '',
+        status: statusEl ? statusEl.value : '',
+        comment: commentEl ? commentEl.value : ''
+    };
+
+    // Envía los datos usando fetch
+    fetch('https://us-central1-agritecgeo-analytics.cloudfunctions.net/evaluate-response-plantix-upload-comments-1', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();  // Asegúrate de que esta línea solo se ejecute si la respuesta es 200 OK
+    })
+    .then(data => console.log('Success:', data))
+    .catch((error) => {
+        console.error('Error:', error);
     });
 }
 
